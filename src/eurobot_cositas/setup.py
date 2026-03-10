@@ -31,7 +31,8 @@ setup(
         'console_scripts': [
             'subcriptor = eurobot_cositas.subcriptor:main',
             'aruco_detector_cositas = eurobot_cositas.aruco_detector_cositas:main',
-            'vision_navigation = eurobot_cositas.vision_navigation:main'
+            'vision_navigation = eurobot_cositas.vision_navigation:main',
+            'estados = eurobot_cositas.estados:main',
         ],
     },
 )

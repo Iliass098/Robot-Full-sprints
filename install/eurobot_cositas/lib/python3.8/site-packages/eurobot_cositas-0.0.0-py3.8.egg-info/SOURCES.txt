@@ -11,9 +11,11 @@ setup.py
 config/eurobot_view.rviz
 eurobot_cositas/__init__.py
 eurobot_cositas/aruco_detector_cositas.py
+eurobot_cositas/estados.py
 eurobot_cositas/subcriptor.py
 eurobot_cositas/vision_navigation.py
 launch/Move_eurobot_launch.py
+launch/estados_launch.py
 launch/eurobot_world_launch.py
 launch/static_overhead_camera.launch.py
 launch/subcriptor_launch.py
