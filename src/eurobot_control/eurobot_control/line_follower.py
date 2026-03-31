@@ -18,20 +18,25 @@ class LineFollowerNode(Node):
         self.declare_parameter('debug_image_topic', '/robot6/debug/line_mask')
         self.declare_parameter('line_color', 'black')
         self.declare_parameter('roi_top_fraction', 0.60)
-        self.declare_parameter('base_speed', 0.12)
-        self.declare_parameter('reduced_speed', 0.05)
-        self.declare_parameter('max_angular', 1.5)
-        self.declare_parameter('kp', 0.0045)
+        self.declare_parameter('base_speed', 0.18)
+        self.declare_parameter('reduced_speed', 0.09)
+        self.declare_parameter('max_angular', 1.2)
+        self.declare_parameter('kp', 0.9)
         self.declare_parameter('ki', 0.0002)
-        self.declare_parameter('kd', 0.0020)
-        self.declare_parameter('integral_limit', 3000.0)
+        self.declare_parameter('kd', 0.18)
+        self.declare_parameter('integral_limit', 1.2)
         self.declare_parameter('min_contour_area', 700.0)
+        self.declare_parameter('error_alpha', 0.35)
+        self.declare_parameter('center_deadband', 0.04)
+        self.declare_parameter('max_angular_step', 0.12)
         self.declare_parameter('lost_stop', True)
         self.declare_parameter('publish_debug_image', True)
 
         self.bridge = CvBridge()
         self.prev_error = 0.0
+        self.filtered_error = 0.0
         self.integral = 0.0
+        self.prev_angular = 0.0
         self.last_stamp = None
 
         camera_topic = self.get_parameter('camera_topic').value
@@ -69,12 +74,15 @@ class LineFollowerNode(Node):
 
         if centroid_x is None:
             self.integral = 0.0
+            self.filtered_error = 0.0
+            self.prev_error = 0.0
+            self.prev_angular = 0.0
             if bool(self.get_parameter('lost_stop').value):
                 self.cmd_pub.publish(Twist())
             return
 
         center_x = width / 2.0
-        error = float(centroid_x - center_x)
+        error = float((centroid_x - center_x) / center_x)
         dt = self._compute_dt()
 
         kp = float(self.get_parameter('kp').value)
@@ -82,14 +90,31 @@ class LineFollowerNode(Node):
         kd = float(self.get_parameter('kd').value)
         integral_limit = float(self.get_parameter('integral_limit').value)
         max_angular = float(self.get_parameter('max_angular').value)
+        error_alpha = float(self.get_parameter('error_alpha').value)
+        center_deadband = float(self.get_parameter('center_deadband').value)
+        max_angular_step = float(self.get_parameter('max_angular_step').value)
 
-        self.integral += error * dt
+        self.filtered_error = (
+            error_alpha * error + (1.0 - error_alpha) * self.filtered_error
+        )
+
+        if abs(self.filtered_error) < center_deadband:
+            self.filtered_error = 0.0
+
+        self.integral += self.filtered_error * dt
         self.integral = float(np.clip(self.integral, -integral_limit, integral_limit))
-        derivative = (error - self.prev_error) / dt
-        self.prev_error = error
+        derivative = (self.filtered_error - self.prev_error) / dt
+        self.prev_error = self.filtered_error
 
-        angular = -(kp * error + ki * self.integral + kd * derivative)
+        angular = -(kp * self.filtered_error + ki * self.integral + kd * derivative)
         angular = float(np.clip(angular, -max_angular, max_angular))
+        angular_delta = np.clip(
+            angular - self.prev_angular,
+            -max_angular_step,
+            max_angular_step,
+        )
+        angular = float(self.prev_angular + angular_delta)
+        self.prev_angular = angular
 
         base_speed = float(self.get_parameter('base_speed').value)
         reduced_speed = float(self.get_parameter('reduced_speed').value)

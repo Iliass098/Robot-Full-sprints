@@ -1,17 +1,45 @@
-Iiniciar Tablero Eurobot Cositas
-Los modelos en la carpeta de models colocalos en tu carpeta .gazebo/models
+# G06 Eurobot Workspace
 
-source /opt/ros/foxy/setup.bash
-export TURTLEBOT3_MODEL=waffle
+Clean ROS 2 workspace for the G06 project. The source tree is split by domain so each package has a clear responsibility.
 
+## Packages
+
+- `src/eurobot_perception`: ArUco and template-based vision nodes.
+- `src/eurobot_control`: line following and scripted FSM control.
+- `src/eurobot_navigation`: route navigation and runtime topic monitoring.
+- `src/eurobot_bringup`: launch files, simulation assets, configs, and the interactive menu.
+
+## Quick Start
+
+```bash
 colcon build
 source install/setup.bash
-ros2 launch eurobot_cositas Move_eurobot_launch.py
+ros2 run eurobot_bringup workspace_menu
+```
 
+Or use the repo shortcut:
 
-colcon build 
-source install/setup.bash
-ros2 launch eurobot_cositas eurobot_world_launch.py 
+```bash
+./menu.sh
+```
 
-otra terminal
-ros2 run rqt_image_view rqt_image_view /template/detected_image
+## Direct Launch Commands
+
+```bash
+ros2 launch eurobot_bringup simulation.launch.py
+ros2 launch eurobot_bringup perception.launch.py
+ros2 launch eurobot_bringup line_follower.launch.py
+ros2 run eurobot_control camera_debug_viewer
+ros2 launch eurobot_bringup line_follower_with_viewer.launch.py
+ros2 launch eurobot_bringup star_fsm.launch.py
+ros2 launch eurobot_bringup navigation.launch.py
+ros2 launch eurobot_bringup monitor.launch.py
+ros2 launch eurobot_bringup full_demo.launch.py
+```
+
+## Structure
+
+- `src/`: ROS 2 packages only.
+- `assets/`: rosbag and non-package project assets.
+- `world/`: shared Gazebo models.
+- `frames.pdf`: reference document.

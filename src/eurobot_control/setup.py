@@ -22,6 +22,7 @@ setup(
     entry_points={
         'console_scripts': [
             'line_follower = eurobot_control.line_follower:main',
+            'camera_debug_viewer = eurobot_control.camera_debug_viewer:main',
             'star_fsm = eurobot_control.star_fsm:main',
         ],
     },

@@ -1,0 +1,13 @@
+build/
+install/
+log/
+
+src/**/build/
+src/**/install/
+src/**/log/
+
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+line_follower/

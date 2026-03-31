@@ -9,6 +9,11 @@ MENU_OPTIONS = [
     ('Simulation World', ['ros2', 'launch', 'eurobot_bringup', 'simulation.launch.py']),
     ('Perception Stack', ['ros2', 'launch', 'eurobot_bringup', 'perception.launch.py']),
     ('Line Follower', ['ros2', 'launch', 'eurobot_bringup', 'line_follower.launch.py']),
+    ('Camera Viewer', ['ros2', 'run', 'eurobot_control', 'camera_debug_viewer']),
+    (
+        'Line Follower + Viewer',
+        ['ros2', 'launch', 'eurobot_bringup', 'line_follower_with_viewer.launch.py'],
+    ),
     ('Star FSM', ['ros2', 'launch', 'eurobot_bringup', 'star_fsm.launch.py']),
     ('Route Navigation', ['ros2', 'launch', 'eurobot_bringup', 'navigation.launch.py']),
     ('Topic Monitor', ['ros2', 'launch', 'eurobot_bringup', 'monitor.launch.py']),
@@ -20,7 +25,7 @@ def print_menu():
     print('\nG06 Workspace Menu')
     print('=' * 72)
     for index, (label, command) in enumerate(MENU_OPTIONS, start=1):
-        print(f'{index}. {label:<18} {" ".join(command)}')
+        print(f'{index}. {label:<24} {" ".join(command)}')
     print('0. Exit')
     print('=' * 72)
 
