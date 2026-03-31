@@ -1,0 +1,17 @@
+line_follower:
+  ros__parameters:
+    camera_topic: /robot6/camera/image_raw
+    cmd_vel_topic: /robot6/cmd_vel
+    debug_image_topic: /robot6/debug/line_mask
+    line_color: black
+    roi_top_fraction: 0.60
+    base_speed: 0.12
+    reduced_speed: 0.05
+    max_angular: 1.5
+    kp: 0.0045
+    ki: 0.0002
+    kd: 0.0020
+    integral_limit: 3000.0
+    min_contour_area: 700.0
+    lost_stop: true
+    publish_debug_image: true
